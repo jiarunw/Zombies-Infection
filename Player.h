@@ -9,7 +9,7 @@ using namespace std;
 
 class Player {
 private:
-	GLuint textID;
+	GLuint textID2;
 	YsRawPngDecoder playerPNGs;
 	int state;
 	int x;

@@ -56,11 +56,14 @@ public:
         else
             this->gunPNGs.Decode("machineGun.png");
         this->gunPNGs.Flip();
-        YsRawPngDecoder* png = &gunPNGs;
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GLuint textID;
         glGenTextures(1, &textID);
+        
+    }
+    void drawPng(int x, int y, int dx, int dy)
+    {
         glBindTexture(GL_TEXTURE_2D, textID);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -68,13 +71,9 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, png->wid, png->hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, png->rgba);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->gunPNGs.wid, this->gunPNGs.hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->gunPNGs.rgba);
 
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    }
-    void drawPng(int x, int y, int dx, int dy)
-    {
-        
         glColor4d(1.0, 1.0, 1.0, 1.0);
 
         glEnable(GL_TEXTURE_2D);

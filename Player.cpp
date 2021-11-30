@@ -16,28 +16,16 @@ void Player::initialize(int x, int y)
 	this->vx = 5;
 	this->vy = 5;
 	this->HP = 300;
-	this->xSize = 25;
-	this->ySize = 25;
+	this->xSize = 55;
+	this->ySize = 105;
 	this->currentWeaponID = 0;
 	this->playerPNGs.Decode("player.png");
 	this->playerPNGs.Flip();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glGenTextures(1, &textID);
-	glBindTexture(GL_TEXTURE_2D, textID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->playerPNGs.wid, this->playerPNGs.hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->playerPNGs.rgba);
-
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-
-	glBindTexture(GL_TEXTURE_2D, textID);
+	glGenTextures(1, &textID2);
+	
 	
 }
 
@@ -124,6 +112,19 @@ void Player::draw() const
 	}
 	glEnd();
 	*/
+	glBindTexture(GL_TEXTURE_2D, textID2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->playerPNGs.wid, this->playerPNGs.hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->playerPNGs.rgba);
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+
+	glBindTexture(GL_TEXTURE_2D, textID2);
 	glColor4d(1.0, 1.0, 1.0, 1.0);
 
 	glEnable(GL_TEXTURE_2D);

@@ -68,19 +68,6 @@ public:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glGenTextures(1, &textID);
-        glBindTexture(GL_TEXTURE_2D, textID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->bodyPNGs[0].wid, this->bodyPNGs[0].hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->bodyPNGs[0].rgba);
-
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        
-
-        glBindTexture(GL_TEXTURE_2D, textID);
         set();
     };
 
@@ -291,8 +278,20 @@ public:
         //png = nullptr;
     };
 
-    void drawAlive(YsRawPngDecoder* png)
-    {
+    void drawAlive(YsRawPngDecoder* png) {
+
+        glBindTexture(GL_TEXTURE_2D, textID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->bodyPNGs[0].wid, this->bodyPNGs[0].hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->bodyPNGs[0].rgba);
+
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    
         glColor4d(1.0, 1.0, 1.0, 1.0);
         
         glEnable(GL_TEXTURE_2D);
