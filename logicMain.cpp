@@ -8,7 +8,6 @@
 #include "Player.h"
 #include"fssimplewindow.h"
 #include"Bullet.h"
-//#include"resource.hpp"
 #include"resource.h"
 #include<list>
 
@@ -21,7 +20,8 @@ using namespace std;
 
 // BackGround Part
 void initObstacle(double map[], int xObstacle[], int yObstacle[], int xObstacleSize[], int yObstacleSize[]) {
-	int obstacleNum = sizeof(xObstacle) / sizeof(xObstacle[0]);
+	int obstacleNum = 10;
+	cout << obstacleNum << "\n";
 	for (int i = 0; i < obstacleNum; i++) {
 		// out iteration
 		int curX = xObstacle[i];
@@ -55,12 +55,16 @@ void drawObstacle(double map[]) {
 }
 
 void initBackGround(double map[], list<Resource*>& resourceList) {
+	// init map
+	for (int i = 0; i < mapWidth * mapHeight; i++) {
+		map[i] = 0.0;
+	}
 	// update map resources
 	// set obstacle position
-	int xObstacle[] = {100};
-	int yObstacle[] = {200};
-	int xObstacleSize[] = {30};
-	int yObstacleSize[] = {40};
+	int xObstacle[] = { 50, 425, 50, 425, 300, 450, 300, 300, 100, 650 };
+	int yObstacle[] = { 25, 25, 525, 525, 225, 225, 150, 400, 150, 150 };
+	int xObstacleSize[] = { 325, 325, 325, 325, 50, 50, 200, 200, 50, 50 };
+	int yObstacleSize[] = { 50, 50, 50, 50, 150, 150, 50, 50, 300, 300 };
 	initObstacle(map, xObstacle, yObstacle, xObstacleSize, yObstacleSize);
 
 	// get resource position and resource id from resource.h
@@ -72,22 +76,50 @@ void initBackGround(double map[], list<Resource*>& resourceList) {
 	for (int i = 0; i < 12; i++) {
 		if (i / 3 == 0) {
 			Hprecover* curResource = new Hprecover();
-			curResource->init();
+			while (1) {
+				curResource->init();
+				int curX = curResource->GetX();
+				int curY = curResource->GetY();
+				if (map[GETMAPINDEX(curX, curY, mapWidth, mapHeight)] != 1) {
+					break;
+				}
+			}
 			resourceList.push_back(curResource);
 		}
 		if (i / 3 == 1) {
 			Bomb* curResource = new Bomb();
-			curResource->init();
+			while (1) {
+				curResource->init();
+				int curX = curResource->GetX();
+				int curY = curResource->GetY();
+				if (map[GETMAPINDEX(curX, curY, mapWidth, mapHeight)] != 1) {
+					break;
+				}
+			}
 			resourceList.push_back(curResource);
 		}
 		if (i / 3 == 2) {
 			Green* curResource = new Green();
-			curResource->init();
+			while (1) {
+				curResource->init();
+				int curX = curResource->GetX();
+				int curY = curResource->GetY();
+				if (map[GETMAPINDEX(curX, curY, mapWidth, mapHeight)] != 1) {
+					break;
+				}
+			}
 			resourceList.push_back(curResource);
 		}
 		if (i / 3 == 3) {
 			Box* curResource = new Box();
-			curResource->init();
+			while (1) {
+				curResource->init();
+				int curX = curResource->GetX();
+				int curY = curResource->GetY();
+				if (map[GETMAPINDEX(curX, curY, mapWidth, mapHeight)] != 1) {
+					break;
+				}
+			}
 			resourceList.push_back(curResource);
 		}
 	}
@@ -127,7 +159,7 @@ void drawEnemy(vector<Enemy*> enemyList, int enemyNum) {
 }
 
 // Player Part
-Player* initPlayer(double map[], int mapWidth, int mapHeight) {
+Player initPlayer(double map[], int mapWidth, int mapHeight) {
 	int playerX, playerY;
 	while (true) {
 		playerX = rand() % mapWidth;
@@ -136,12 +168,12 @@ Player* initPlayer(double map[], int mapWidth, int mapHeight) {
 			break;
 		}
 	}
-	Player* myPlayer = new Player(playerX, playerY);
+	Player myPlayer = Player(playerX, playerY);
 	return myPlayer;
 }
 
-void drawPlayer(Player* myPlayer) {
-	myPlayer->draw();
+void drawPlayer(Player myPlayer) {
+	myPlayer.draw();
 }
 
 // enemy Bullet Part, Bullet Part
@@ -156,36 +188,36 @@ void drawBullet(list<Bullet*> enemyBulletList, list<Bullet*> bulletList) {
 
 
 // Move Part
-void moveAll(vector<Enemy*> enemyList, double map[], Player* myPlayer, int key,
-	int mapWidth, int mapHeight, list<Bullet*>& enemyBulletList, list<Bullet*> &bulletList) {
+void moveAll(vector<Enemy*> enemyList, double map[], Player& myPlayer, int key,
+	int mapWidth, int mapHeight, list<Bullet*>& enemyBulletList, list<Bullet*>& bulletList) {
 	// move enemy
-	double target[2] = { myPlayer->getX(), myPlayer->getY() };
+	double target[2] = { myPlayer.getX(), myPlayer.getY() };
 	for (int i = 0; i < enemyList.size(); i++) {
 		enemyList[i]->move(target);
 		//enemyList[i].move(target);
 	}
 	// move player
-	int vx = myPlayer->getvx();
-	int vy= myPlayer->getvy();
-	if (key == FSKEY_W && map[GETMAPINDEX((int)myPlayer->getX(), (int)myPlayer->getY() - vy, mapWidth, mapHeight)] != 1
-		&& (int)myPlayer->getY() - 1 > 10) {
+	int vx = myPlayer.getvx();
+	int vy = myPlayer.getvy();
+	if (key == FSKEY_W && (int)myPlayer.getY() - vy > 1 && map[GETMAPINDEX((int)myPlayer.getX(), (int)myPlayer.getY() - vy, mapWidth, mapHeight)] != 1
+		) {
 		// up
-		myPlayer->move(key);
+		myPlayer.move(key);
 	}
-	if (key == FSKEY_S && map[GETMAPINDEX((int)myPlayer->getX(), (int)myPlayer->getY() + vy, mapWidth, mapHeight)] != 1
-		&& (int)myPlayer->getY() + 1 < mapHeight - 10) {
+	if (key == FSKEY_S && (int)myPlayer.getY() + vy < mapHeight - 1 && map[GETMAPINDEX((int)myPlayer.getX(), (int)myPlayer.getY() + vy, mapWidth, mapHeight)] != 1
+		) {
 		// down
-		myPlayer->move(key);
+		myPlayer.move(key);
 	}
-	if (key == FSKEY_A && map[GETMAPINDEX((int)myPlayer->getX() - vx, (int)myPlayer->getY(), mapWidth, mapHeight)] != 1
-		&& (int)myPlayer->getX() - 1 > 0) {
+	if (key == FSKEY_A && (int)myPlayer.getX() - vx > 1 && map[GETMAPINDEX((int)myPlayer.getX() - vx, (int)myPlayer.getY(), mapWidth, mapHeight)] != 1
+		) {
 		// left
-		myPlayer->move(key);
+		myPlayer.move(key);
 	}
-	if (key == FSKEY_D && map[GETMAPINDEX((int)myPlayer->getX() + vx, (int)myPlayer->getY(), mapWidth, mapHeight)] != 1
-		&& (int)myPlayer->getX() + 1 < mapWidth) {
+	if (key == FSKEY_D && (int)myPlayer.getX() + vx < mapWidth - 1 && map[GETMAPINDEX((int)myPlayer.getX() + vx, (int)myPlayer.getY(), mapWidth, mapHeight)] != 1
+		) {
 		// right
-		myPlayer->move(key);
+		myPlayer.move(key);
 	}
 
 	// move bullet
@@ -201,12 +233,12 @@ void moveAll(vector<Enemy*> enemyList, double map[], Player* myPlayer, int key,
 
 // Check Collision. 
 // Enemy - Player
-void colliEP(Enemy* curEnemy, Player* myPlayer, list<Bullet*>& enemyBulletList) {
+void colliEP(Enemy* curEnemy, Player& myPlayer, list<Bullet*>& enemyBulletList) {
 	double enemyX = curEnemy->getX();
 	double enemyY = curEnemy->getY();
-	double playerX = myPlayer->getX();
-	double playerY = myPlayer->getY();
-	double target[2] = { myPlayer->getX(), myPlayer->getY() };
+	double playerX = myPlayer.getX();
+	double playerY = myPlayer.getY();
+	double target[2] = { myPlayer.getX(), myPlayer.getY() };
 	double enemyXsize = curEnemy->getXSize();
 	double enemyYsize = curEnemy->getYSize();
 	if (curEnemy->getCurT() % 10 == 0) {
@@ -221,11 +253,11 @@ void colliEP(Enemy* curEnemy, Player* myPlayer, list<Bullet*>& enemyBulletList) 
 }
 
 // Resource - Player - Enemy
-void colliRP(Player* &myPlayer, list<Resource*>& resourceList, vector<Enemy*> &enemyList) {
-	int playerX = myPlayer->getX();
-	int playerY = myPlayer->getY();
-	double playerXsize = myPlayer->getxSize();
-	double playerYsize = myPlayer->getySize();
+void colliRP(Player& myPlayer, list<Resource*>& resourceList, vector<Enemy*>& enemyList) {
+	int playerX = myPlayer.getX();
+	int playerY = myPlayer.getY();
+	double playerXsize = myPlayer.getxSize();
+	double playerYsize = myPlayer.getySize();
 	// TODO: check map resource id, update player state
 	// player needs updateHP, update weaponList function
 	list<Resource*>::iterator it;
@@ -256,23 +288,28 @@ void colliRP(Player* &myPlayer, list<Resource*>& resourceList, vector<Enemy*> &e
 			curResource->Action();
 			if (curReId == 2) {
 				// HPrecover
-				myPlayer->updateHP(-1 * curResource->GetValue());
+				myPlayer.updateHP(-1 * curResource->GetValue());
+				it = resourceList.erase(it);
 			}
 			else if (curReId == 3) {
 				// bomb
-				myPlayer->updateHP(curResource->GetValue());
+				myPlayer.updateHP(curResource->GetValue());
+				it = resourceList.erase(it);
 			}
-			else if (curReId == 4) {
-				// grass
-			}
+			//else if (curReId == 4) {
+			//	// grass
+			//}
 			else if (curReId == 5) {
 				// box, add weapon
 				int weaponId = curResource->GetValue();
 				// cout << weaponId << "\n";
 				Weapon* curWeapon = new Weapon(weaponId);
-				myPlayer->addWeapon(curWeapon);
+				myPlayer.addWeapon(curWeapon);
+				it = resourceList.erase(it);
 			}
-			it = resourceList.erase(it);
+			else {
+				++it;
+			}
 		}
 		else {
 			++it;
@@ -340,11 +377,11 @@ void colliBE(Enemy* curEnemy, list<Bullet*>& bulletList, double map[]) {
 }
 
 // enemyBullet - Player, obstacle
-void coliEBP(list<Bullet*>& enemyBulletList, Player* myPlayer, double map[], int xSize, int ySize) {
-	int playerX = myPlayer->getX();
-	int playerY = myPlayer->getY();
-	double playerXsize = myPlayer->getxSize();
-	double playerYsize = myPlayer->getySize();
+void coliEBP(list<Bullet*>& enemyBulletList, Player& myPlayer, double map[], int xSize, int ySize) {
+	int playerX = myPlayer.getX();
+	int playerY = myPlayer.getY();
+	double playerXsize = myPlayer.getxSize();
+	double playerYsize = myPlayer.getySize();
 
 	list<Bullet*>::iterator it;
 
@@ -374,7 +411,7 @@ void coliEBP(list<Bullet*>& enemyBulletList, Player* myPlayer, double map[], int
 		else if (abs(playerX - buX) < playerXsize && abs(playerY - buY) < playerYsize) {
 			// cout << abs(playerX - buX) << "\n";
 			int ATK = curBullet->getATK();
-			myPlayer->updateHP(ATK);
+			// myPlayer.updateHP(ATK);
 			delete* it;
 			*it = nullptr;
 			it = enemyBulletList.erase(it);
@@ -392,14 +429,14 @@ void coliEBP(list<Bullet*>& enemyBulletList, Player* myPlayer, double map[], int
 
 
 // Shoot
-void shoot(list<Bullet*> &bulletList, Player* myPlayer, int evt, int mx, int my) {
+void shoot(list<Bullet*>& bulletList, Player myPlayer, int evt, int mx, int my) {
 	// question: shall myplayer has a shoot function or I can directly use Bullet class here.
 	// I think former way is better
-	Bullet* curBullet = myPlayer->fire(evt, mx, my);
+	Bullet* curBullet = myPlayer.fire(evt, mx, my);
 	if (curBullet != nullptr) {
 		bulletList.push_back(curBullet);
 	}
-	
+
 }
 
 
@@ -432,7 +469,7 @@ int main() {
 	// init
 	initBackGround(map, resourceList);
 	initEnemy(map, enemyList, enemyNum, windowWidth, windowHeight);
-	Player* myPlayer = initPlayer(map, windowWidth, windowHeight);
+	Player myPlayer = initPlayer(map, windowWidth, windowHeight);
 
 	// time part
 	time_t startPoint = time(NULL);
@@ -467,7 +504,7 @@ int main() {
 		colliRP(myPlayer, resourceList, enemyList);
 
 		// cout << bulletList.size() << "\n";
-		// cout << myPlayer->getHP() << "\n";
+		// cout << myPlayer.getHP() << "\n";
 		// Shoot part, give mouse position
 		int lb, mb, rb, mx, my;
 		auto evt = FsGetMouseEvent(lb, mb, rb, mx, my);
@@ -475,8 +512,8 @@ int main() {
 		shoot(bulletList, myPlayer, evt, mx, my);
 
 		// Check gamestate
-		// cout << myPlayer->getHP() << "\n";
-		if (myPlayer->getHP() <= 0) {
+		// cout << myPlayer.getHP() << "\n";
+		if (myPlayer.getHP() <= 0) {
 			// TODO : add player dead effect, UI
 			cout << "game over" << "\n";
 			break;
