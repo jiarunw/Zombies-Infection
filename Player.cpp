@@ -204,7 +204,8 @@ void Player::addWeapon(Weapon* weapon)
 			 weaponList[i]->refill();
 			//switch to this weapon
 			currentWeaponID = i;
-			
+			delete weapon;
+			weapon = nullptr;
 			return;
 		}
 		
@@ -223,6 +224,8 @@ void Player::dropWeapon()
 			weaponiter != weaponList.end();
 			weaponiter++) {
 			if (*weaponiter == weaponList[currentWeaponID]) {
+				delete* weaponiter;
+				*weaponiter = nullptr;
 				weaponList.erase(weaponiter);
 				currentWeaponID--;
 				return;

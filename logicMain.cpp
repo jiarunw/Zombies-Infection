@@ -461,7 +461,7 @@ int main() {
 	// game parameters
 	// enemy part
 
-	int enemyNum = 10;
+	int enemyNum = 5;
 	int enemyRemain = enemyNum;
 	vector<Enemy*> enemyList;
 
@@ -535,6 +535,18 @@ int main() {
 				enemyRemain++;
 			}
 		}
+
+		// reinit enemy when eliminate all
+		
+		if (enemyRemain == 0) {
+			enemyList.clear();
+			enemyNum = enemyNum + 5;
+			initEnemy(map, enemyList, enemyNum, windowWidth, windowHeight);
+			resourceList.clear();
+			initBackGround(map, resourceList);
+			enemyLevel++;
+		}
+
 		// player - enemy bullet
 		coliEBP(enemyBulletList, myPlayer, map, windowWidth, windowHeight);
 		// player - resource
@@ -554,9 +566,11 @@ int main() {
 		glVertex2i(0, 600);
 		glEnd();
 		drawObstacle(map);
+		
+		
+		drawResource(resourceList);
 		drawEnemy(enemyList, enemyNum);
 		drawPlayer(myPlayer, mx, my);
-		drawResource(resourceList);
 		drawBullet(enemyBulletList, bulletList);
 
 		// text part
@@ -597,7 +611,14 @@ int main() {
 		YsGlDrawFontBitmap16x20(textContent2);
 
 		char* textContent3;
-		string strText3 = "Magazine:" + to_string(myPlayer->getBulletNum());
+		string strText3 = "";
+		if (myPlayer->getWeaponID() == 0) {
+			strText3 = "Magazine: Unlimited";
+		}
+		else {
+			strText3 = "Magazine:" + to_string(myPlayer->getBulletNum());
+		}
+		
 		textContent3 = new char[strText3.length() + 1];
 		strcpy(textContent3, strText3.c_str());
 
@@ -615,6 +636,16 @@ int main() {
 		glRasterPos2d(50, 140);
 		// YsGlDrawFontBitmap32x48(textContent);
 		YsGlDrawFontBitmap16x20(textContent4);
+
+		char* textContent5;
+		string strText5 = "Level:" + to_string(enemyLevel);
+		textContent5 = new char[strText5.length() + 1];
+		strcpy(textContent5, strText5.c_str());
+
+		glColor3ub(238, 160, 68);
+		glRasterPos2d(600, 50);
+		// YsGlDrawFontBitmap32x48(textContent);
+		YsGlDrawFontBitmap20x32(textContent5);
 
 
 		// shoot(bulletList, myPlayer, lb, mx, my);
