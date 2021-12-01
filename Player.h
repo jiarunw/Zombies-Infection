@@ -10,7 +10,7 @@ using namespace std;
 class Player {
 private:
 	GLuint textID2;
-	YsRawPngDecoder playerPNGs;
+	YsRawPngDecoder* playerPNGs;
 	int state;
 	int x;
 	int y;
@@ -19,18 +19,20 @@ private:
 	int xSize;
 	int ySize;
 	int HP;
-	int maxHP = 300;
+	int maxHP = 500;
 	double vx;
 	double vy;
+	int direction;
 	//the index of current weapon
 	//not the same as the id inside the weapon class
-	int currentWeaponID;
+	
 	vector<Weapon*> weaponList;
 public:
+	int currentWeaponID;
 	Player(int x, int y);
 	void initialize(int x, int y);
 	void move(int key);
-	void draw()const;
+	void draw(int mx, int my)const;
 	void switchWeapon(int key);
 	void addWeapon(Weapon*);
 	void dropWeapon();
@@ -61,5 +63,7 @@ public:
 		return this->ySize;
 	}
 
+	int getBulletNum();
+	int getWeaponID();
 	Bullet* bulletGenerator(int id, double x, double y, double thetaX, double thetaY);
 };

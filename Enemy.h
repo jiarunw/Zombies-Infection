@@ -257,7 +257,7 @@ public:
         switch (state)
         {
         case 0:
-            drawAlive(png);
+           //drawAlive(png);
             break;
         case 1:
             drawAlive(png);
@@ -287,7 +287,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->bodyPNGs[0].wid, this->bodyPNGs[0].hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->bodyPNGs[0].rgba);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, png->wid, png->hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, png->rgba);
 
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
@@ -519,7 +519,7 @@ private:
     double* map;
     int attackReady;
     AStar* planner;
-    YsRawPngDecoder bodyPNG;
+   // YsRawPngDecoder bodyPNG;
     YsRawPngDecoder* bodyPNGs;
 
     void plan(double* target)

@@ -10,7 +10,8 @@
 #include"Bullet.h"
 #include"resource.h"
 #include<list>
-
+#include "ysglfontdata.h"
+#include<time.h>
 int mapWidth = 800;
 int mapHeight = 600;
 
@@ -21,7 +22,7 @@ using namespace std;
 // BackGround Part
 void initObstacle(double map[], int xObstacle[], int yObstacle[], int xObstacleSize[], int yObstacleSize[]) {
 	int obstacleNum = 10;
-	cout << obstacleNum << "\n";
+	//cout << obstacleNum << "\n";
 	for (int i = 0; i < obstacleNum; i++) {
 		// out iteration
 		int curX = xObstacle[i];
@@ -68,13 +69,13 @@ void initBackGround(double map[], list<Resource*>& resourceList) {
 	initObstacle(map, xObstacle, yObstacle, xObstacleSize, yObstacleSize);
 
 	// get resource position and resource id from resource.h
-	int id2Num = 3;
-	int id3Num = 3;
-	int id4Num = 3;
-	int id5Num = 3;
+	int id2Num = 6;
+	int id3Num = 6;
+	int id4Num = 6;
+	int id5Num = 6;
 
-	for (int i = 0; i < 12; i++) {
-		if (i / 3 == 0) {
+	for (int i = 0; i < 24; i++) {
+		if (i / 6 == 0) {
 			Hprecover* curResource = new Hprecover();
 			while (1) {
 				curResource->init();
@@ -86,7 +87,7 @@ void initBackGround(double map[], list<Resource*>& resourceList) {
 			}
 			resourceList.push_back(curResource);
 		}
-		if (i / 3 == 1) {
+		if (i / 6 == 1) {
 			Bomb* curResource = new Bomb();
 			while (1) {
 				curResource->init();
@@ -98,7 +99,7 @@ void initBackGround(double map[], list<Resource*>& resourceList) {
 			}
 			resourceList.push_back(curResource);
 		}
-		if (i / 3 == 2) {
+		if (i / 6 == 2) {
 			Green* curResource = new Green();
 			while (1) {
 				curResource->init();
@@ -110,10 +111,11 @@ void initBackGround(double map[], list<Resource*>& resourceList) {
 			}
 			resourceList.push_back(curResource);
 		}
-		if (i / 3 == 3) {
+		if (i / 6 == 3) {
 			Box* curResource = new Box();
 			while (1) {
 				curResource->init();
+				cout << curResource->GetValue() << endl;
 				int curX = curResource->GetX();
 				int curY = curResource->GetY();
 				if (map[GETMAPINDEX(curX, curY, mapWidth, mapHeight)] != 1) {
@@ -172,8 +174,8 @@ Player* initPlayer(double map[], int mapWidth, int mapHeight) {
 	return myPlayer;
 }
 
-void drawPlayer(Player* myPlayer) {
-	myPlayer->draw();
+void drawPlayer(Player* myPlayer, int mx, int my) {
+	myPlayer->draw(mx, my);
 }
 
 // enemy Bullet Part, Bullet Part
@@ -279,21 +281,24 @@ void colliRP(Player* myPlayer, list<Resource*>& resourceList, vector<Enemy*>& en
 				double enemyYsize = curEnemy->getYSize();
 				if (abs(enemyX - reX) < reXsize && abs(enemyY - reY) < reYsize) {
 					curEnemy->attacked(10);
+					curResource->Action();
+					cout << "Bomb" << endl;
 				}
 				++itEnemy;
 			}
 		}
 		// check resource and player
 		if (abs(playerX - reX) < reXsize && abs(playerY - reY) < reYsize) {
-			curResource->Action();
 			if (curReId == 2) {
 				// HPrecover
 				myPlayer->updateHP(-1 * curResource->GetValue());
+				//curResource->Action();
 				it = resourceList.erase(it);
 			}
 			else if (curReId == 3) {
 				// bomb
 				myPlayer->updateHP(curResource->GetValue());
+				//curResource->Action();
 				it = resourceList.erase(it);
 			}
 			//else if (curReId == 4) {
@@ -302,14 +307,18 @@ void colliRP(Player* myPlayer, list<Resource*>& resourceList, vector<Enemy*>& en
 			else if (curReId == 5) {
 				// box, add weapon
 				int weaponId = curResource->GetValue();
-				// cout << weaponId << "\n";
+				cout << weaponId << "\n";
 				Weapon* curWeapon = new Weapon(weaponId);
 				myPlayer->addWeapon(curWeapon);
+				//curResource->Action();
 				it = resourceList.erase(it);
 			}
 			else {
+				curResource->Action();
 				++it;
 			}
+			// curResource->Action();
+
 		}
 		else {
 			++it;
@@ -411,7 +420,7 @@ void coliEBP(list<Bullet*>& enemyBulletList, Player* myPlayer, double map[], int
 		else if (abs(playerX - buX) < playerXsize && abs(playerY - buY) < playerYsize) {
 			// cout << abs(playerX - buX) << "\n";
 			int ATK = curBullet->getATK();
-			// myPlayer->updateHP(ATK);
+			myPlayer->updateHP(ATK);
 			delete* it;
 			*it = nullptr;
 			it = enemyBulletList.erase(it);
@@ -441,16 +450,19 @@ void shoot(list<Bullet*>& bulletList, Player* myPlayer, int evt, int mx, int my)
 
 
 int main() {
-	FsChangeToProgramDir();
+	srand(time(NULL));
+	//FsChangeToProgramDir();
+	
 	// window
 	int windowWidth = 800;
 	int windowHeight = 600;
-	FsOpenWindow(50, 50, windowWidth, windowHeight, 1);
+	FsOpenWindow(0, 0, windowWidth, windowHeight, 1);
 
 	// game parameters
 	// enemy part
 
 	int enemyNum = 10;
+	int enemyRemain = enemyNum;
 	vector<Enemy*> enemyList;
 
 	// bullet part
@@ -475,29 +487,53 @@ int main() {
 	// time part
 	time_t startPoint = time(NULL);
 
+	// sound part
+	YsSoundPlayer player;
+	YsSoundPlayer::SoundData wav;
+	char* fileName;
+	string str = "background.wav";
+	fileName = new char[str.length() + 1];
+	strcpy(fileName, str.c_str());
+	wav.LoadWav(fileName);
+	player.Start();
+	player.PlayOneShot(wav);
+
+	//
+	int enemyLevel = 1;
+	
 	while (true) {
+		if (player.IsPlaying(wav) != YSTRUE) {
+			char* fileName;
+			string str = "background.wav";
+			fileName = new char[str.length() + 1];
+			strcpy(fileName, str.c_str());
+			wav.LoadWav(fileName);
+			player.Start();
+			player.PlayOneShot(wav);
+		}
+		player.KeepPlaying();
 		FsPollDevice();
 		auto key = FsInkey();
 		if (key == FSKEY_ESC) { 
 			break;
 		}
+		myPlayer->switchWeapon(key);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Draw part
-		drawObstacle(map);
-		drawEnemy(enemyList, enemyNum);
-		drawPlayer(myPlayer);
-		drawResource(resourceList);
-		drawBullet(enemyBulletList, bulletList);
-
+		
+		
 		// Move part
 		moveAll(enemyList, map, myPlayer, key, windowWidth, windowHeight, enemyBulletList, bulletList);
 
 		// Check collision part
 		// enemy - player
 		// bullet - enemy
+		enemyRemain = 0;
 		for (int i = 0; i < enemyList.size(); i++) {
-			colliEP(enemyList[i], myPlayer, enemyBulletList);
-			colliBE(enemyList[i], bulletList, map);
+			if (enemyList[i]->getHP() > 0) {
+				colliEP(enemyList[i], myPlayer, enemyBulletList);
+				colliBE(enemyList[i], bulletList, map);
+				enemyRemain++;
+			}
 		}
 		// player - enemy bullet
 		coliEBP(enemyBulletList, myPlayer, map, windowWidth, windowHeight);
@@ -509,6 +545,78 @@ int main() {
 		// Shoot part, give mouse position
 		int lb, mb, rb, mx, my;
 		auto evt = FsGetMouseEvent(lb, mb, rb, mx, my);
+		// Draw part
+		glColor3f(110.0/255.0, 73.0 / 255.0, 29.0 / 255.0);
+		glBegin(GL_QUADS);
+		glVertex2i(0, 0);
+		glVertex2i(800, 0);
+		glVertex2i(800, 600);
+		glVertex2i(0, 600);
+		glEnd();
+		drawObstacle(map);
+		drawEnemy(enemyList, enemyNum);
+		drawPlayer(myPlayer, mx, my);
+		drawResource(resourceList);
+		drawBullet(enemyBulletList, bulletList);
+
+		// text part
+		char* textContent;
+		string strText = "HP:"+to_string(myPlayer->getHP());
+		textContent = new char[strText.length() + 1];
+		strcpy(textContent, strText.c_str());
+
+		glColor3ub(209, 114, 0);
+		glRasterPos2d(50, 50);
+		// YsGlDrawFontBitmap32x48(textContent);
+		YsGlDrawFontBitmap16x20(textContent);
+
+
+		char* textContent2;
+		string weapon;
+		switch (myPlayer->getWeaponID())
+		{
+		case 0:
+			weapon = "Pistol";
+			break;
+		case 1:
+			weapon = "Rifle";
+			break;
+		case 2:
+			weapon = "Machine Gun";
+			break;
+		default:
+			break;
+		}
+		string strText2 = "Weapon:" + weapon;
+		textContent2 = new char[strText2.length() + 1];
+		strcpy(textContent2, strText2.c_str());
+
+		glColor3ub(209, 114, 0);
+		glRasterPos2d(50, 80);
+		// YsGlDrawFontBitmap32x48(textContent);
+		YsGlDrawFontBitmap16x20(textContent2);
+
+		char* textContent3;
+		string strText3 = "Magazine:" + to_string(myPlayer->getBulletNum());
+		textContent3 = new char[strText3.length() + 1];
+		strcpy(textContent3, strText3.c_str());
+
+		glColor3ub(209, 114, 0);
+		glRasterPos2d(50, 110);
+		// YsGlDrawFontBitmap32x48(textContent);
+		YsGlDrawFontBitmap16x20(textContent3);
+
+		char* textContent4;
+		string strText4 = "Enemy:" + to_string(enemyRemain);
+		textContent4 = new char[strText4.length() + 1];
+		strcpy(textContent4, strText4.c_str());
+
+		glColor3ub(209, 114, 0);
+		glRasterPos2d(50, 140);
+		// YsGlDrawFontBitmap32x48(textContent);
+		YsGlDrawFontBitmap16x20(textContent4);
+
+
 		// shoot(bulletList, myPlayer, lb, mx, my);
 		shoot(bulletList, myPlayer, evt, mx, my);
 
@@ -521,5 +629,6 @@ int main() {
 		}
 		FsSwapBuffers();
 		FsSleep(25);
+		glPopMatrix();
 	}
 }

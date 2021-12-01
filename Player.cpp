@@ -7,7 +7,7 @@ Player::Player(int x, int y)
 }
 void Player::initialize(int x, int y)
 {
-	this->weaponList.push_back(new Weapon(10));
+	this->weaponList.push_back(new Weapon(0));
 	this->state = 1;
 	this->x = x;
 	this->y = y;
@@ -15,16 +15,23 @@ void Player::initialize(int x, int y)
 	this->dy = 0;
 	this->vx = 5;
 	this->vy = 5;
-	this->HP = 300;
-	this->xSize = 55;
-	this->ySize = 105;
+	this->HP = 500;
+	this->xSize = 38;
+	this->ySize = 58;
 	this->currentWeaponID = 0;
-	this->playerPNGs.Decode("player.png");
-	this->playerPNGs.Flip();
+	this->playerPNGs = new YsRawPngDecoder[4];
+	this->playerPNGs[0].Decode("player_w.png");
+	this->playerPNGs[1].Decode("player_d.png");
+	this->playerPNGs[2].Decode("player_s.png");
+	this->playerPNGs[3].Decode("player_a.png");
+	this->playerPNGs[0].Flip();
+	this->playerPNGs[1].Flip();
+	this->playerPNGs[2].Flip();
+	this->playerPNGs[3].Flip();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glGenTextures(1, &textID2);
+	GLuint textID;
+	glGenTextures(1, &textID);
 	
 	
 }
@@ -35,21 +42,25 @@ void Player::move(int key)
 		dx = 0;
 		dy = -1;
 		this->y += dy * this->vy;
+		direction = 0;
 	}
 	else if (FSKEY_A == key) {
 		dx = -1;
 		dy = 0;
 		this->x += dx * this->vx;
+		direction = 1;
 	}
 	else if (FSKEY_S == key) {
 		dx = 0;
 		dy = 1;
 		this->y += dy * this->vy;
+		direction = 2;
 	}
 	else if (FSKEY_D == key) {
 		dx = 1;
 		dy = 0;
-		this->x += dx * this->vx;;
+		this->x += dx * this->vx;
+		direction = 3;
 	}
 }
 
@@ -61,10 +72,10 @@ void Player::drawHPBar() const
 	//cout << this->HP << "\n";
 	//cout << len << "\n";
 	int start = x - 15;
-	int end = y - 15;
+	int end = y - 15-ySize / 2;
 	glColor3f(0, 0, 0);
-	glBegin(GL_LINES);
-	glLineWidth(1);
+	glBegin(GL_QUADS);
+	//glLineWidth(0.5);
 	glVertex2i(start - 2, end - 2);
 	glVertex2i(start + 32, end - 2);
 	glVertex2i(start + 32, end + 5);
@@ -78,11 +89,15 @@ void Player::drawHPBar() const
 	glVertex2i(start + len, end);
 	glVertex2i(start + len, end + 3);
 	glVertex2i(start, end + 3);
+	
+	
+	
+	
 	glEnd();
 
 	
 }
-void Player::draw() const
+void Player::draw(int mx, int my) const
 {
 	//this->curT += 1;
 	/*glColor4ub(250, 0, 0, 255);
@@ -118,8 +133,23 @@ void Player::draw() const
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->playerPNGs.wid, this->playerPNGs.hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->playerPNGs.rgba);
+	
+	/*if (dx > 0)
+	{
+		
+		if (dy >= 0)
+			direction = 0;
+		else
+			direction = 1;
+	}
+	else
+	{
+		if (dy >= 0)
+			direction = 2;
+		else
+			direction = 3;
+	}*/
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->playerPNGs[direction].wid, this->playerPNGs[direction].hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->playerPNGs[direction].rgba);
 
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
@@ -144,7 +174,7 @@ void Player::draw() const
 	Weapon* currentWeapon = weaponList[currentWeaponID];
 
 	drawHPBar();
-	currentWeapon->drawPng(this->x, this->y, dx, dy);
+	currentWeapon->drawPng(this->x, this->y, dx, dy, weaponList[currentWeaponID]->id, mx, my);
 }
 void Player::switchWeapon(int key)
 {
@@ -164,18 +194,22 @@ void Player::switchWeapon(int key)
 			currentWeaponID++;
 		}
 	}
+	//cout << currentWeaponID << endl;
 }
 void Player::addWeapon(Weapon* weapon)
 {
 	for (int i = 0; i < weaponList.size(); i++) {
 		if (weapon->id == weaponList[i]->id) {
 			//refill the original weapon
-			// weaponList[i]->refill();
+			 weaponList[i]->refill();
 			//switch to this weapon
 			currentWeaponID = i;
+			
 			return;
 		}
+		
 	}
+	cout << weapon->id << "added" << endl;
 	this->weaponList.push_back(weapon);
 	currentWeaponID = weaponList.size() - 1;
 }
@@ -217,6 +251,14 @@ Bullet* Player::fire(int evt, double mx, double my)
 		if (!currentWeapon->readyToFire) {
 			return nullptr;
 		}
+		if (currentWeaponID != 0) {
+			currentWeapon->bullet--;
+			cout << currentWeapon->bullet << endl;
+		}
+		if (currentWeapon->bullet <= 0) {
+			dropWeapon();
+			return nullptr;
+		}
 		double dx = double(mx - this->x);
 		double dy = double(my - this->y);
 		double dis = sqrt(dx * dx + dy * dy);
@@ -228,6 +270,14 @@ Bullet* Player::fire(int evt, double mx, double my)
 	return nullptr;
 }
 
+int Player::getBulletNum()
+{
+	return weaponList[this->currentWeaponID]->bullet;
+}
+int Player::getWeaponID()
+{
+	return weaponList[this->currentWeaponID]->id;
+}
 Bullet* Player::bulletGenerator(int id, double x, double y, double thetaX, double thetaY){
 	/*if(id == 0){
 		new pistolBullet(x, y, thetaX, thetaY);
@@ -239,4 +289,9 @@ Bullet* Player::bulletGenerator(int id, double x, double y, double thetaX, doubl
 		new machineGunBullet(x, y, thetaX, thetaY);
 	}*/
 	return new Bullet(x, y, thetaX, thetaY);
+
 }
+//
+//int Player::getBulletNum() {
+//	return this->weaponList[this->currentWeaponID].bullet;
+//}

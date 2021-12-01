@@ -53,7 +53,7 @@ public:
 class Green: public Resource
 {
 public:
-    int x,y,w,h,length,value;
+    int x,y,w,h,length,value, move_value;
     Green();
     void Draw();
     void init();

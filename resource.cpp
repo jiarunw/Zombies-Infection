@@ -33,7 +33,6 @@ void drawbox(int x1, int y1, int x2, int y2, int r, int g, int b)
     glEnd();
 }
 
-
 void draw_box_from_center(int x,int y,int height, int width)
 {
 //    glColor3ub(255,0,0);
@@ -49,8 +48,6 @@ void DrawMap(int *map,int Window_X, int Window_Y)
     
 
 }
-
-//}
 
 
 void DrawCircle(int x,int y,int r)
@@ -183,14 +180,13 @@ void Bomb::Explosion()
     glBegin(GL_POINTS);
     int px;
     int py;
-    for(int j=5; j<80;j+=5)
+    for(int j=5; j<80;j+=2)
     {
-        for(int i=0;i<length;i++)
+        for(int i=0;i<length;i+=8)
         {
-//            px = ans[i] % 800+rand()%j;
-//            py = ans[i] / 800+rand()%j;
-            px = GetX()-2*GetXsize() +rand()%j;
-            py = GetY()-2*GetYsize() +rand()%j;
+
+            px = GetX()-2*GetXsize() +rand()%j+rand()%20-10;
+            py = GetY()-2*GetYsize() +rand()%j+rand()%20-10;
             
             glColor3ub(j, 0, 0);
             glVertex2i(px,py);
@@ -209,7 +205,7 @@ void Bomb::Explosion()
 
 void Bomb::Action(void)
 {
-    Explosion();
+    //Explosion();
 //    ifdraw = -1;
 //    Kill();
     Kill();
@@ -251,7 +247,7 @@ int Hprecover::GetLength()
 
 void Hprecover::Action()
 {
-    if(ifdraw==1)
+    /*if(ifdraw==1)
     {
         glColor3ub(0,100,0);
         for(int i=0;i<5;i+=1)
@@ -260,7 +256,7 @@ void Hprecover::Action()
             draw_box_from_center(x, y-i, width+i/2,height+i/2);
         }
         
-    }
+    }*/
 //    ifdraw = -1;
     Kill();
 }
@@ -363,40 +359,13 @@ void Green::init()
     id = value;
     base_value = 0;
     ifdraw =1;
+    move_value = 8;
     
 };
 void Green::Action()
 {
-    
-//    if(ifdraw==1)
-//    {
-//
-//        for(int i=0;i<10;i++)
-//        {
-//            glColor3ub(0,255,0);
-//            glBegin(GL_TRIANGLES);
-//            glVertex2i(x,y);
-//            glVertex2i(x+w/2+i, y-h-i);
-//            glVertex2i(x+w,y );
-//        //    glVertex2i(x2, y1);
-//            glEnd();
-//            glColor3ub(0,255,0);
-//            glBegin(GL_TRIANGLES);
-//            glVertex2i(x,y);
-//            glVertex2i(x-w/2-i, y-h/2+i);
-//            glVertex2i(x+w+i,y+i );
-//        //    glVertex2i(x2, y1);
-//            glEnd();
-//            glColor3ub(0,255,0);
-//            glBegin(GL_TRIANGLES);
-//            glVertex2i(x,y);
-//            glVertex2i(x+w+w/2+i, y-h/2-i);
-//            glVertex2i(x+w+i,y+i );
-//        //    glVertex2i(x2, y1);
-//            glEnd();
-//        }
-//
-//    }
+    move_value *= -1;
+
 }
 
 Green::Green()
@@ -410,6 +379,7 @@ Green::Green()
     y_base = y;
     x_size = w;
     y_size = h;
+    move_value =0;
 }
 
 void Green::Draw()
@@ -419,21 +389,21 @@ void Green::Draw()
         glColor3ub(0,255,0);
         glBegin(GL_TRIANGLES);
         glVertex2i(x,y);
-        glVertex2i(x+w/2, y-h);
+        glVertex2i(x+w/2+move_value, y-h);
         glVertex2i(x+w,y );
     //    glVertex2i(x2, y1);
         glEnd();
         glColor3ub(0,255,0);
         glBegin(GL_TRIANGLES);
         glVertex2i(x,y);
-        glVertex2i(x-w/2, y-h/2);
+        glVertex2i(x-w/2+move_value, y-h/2);
         glVertex2i(x+w,y );
     //    glVertex2i(x2, y1);
         glEnd();
         glColor3ub(0,255,0);
         glBegin(GL_TRIANGLES);
         glVertex2i(x,y);
-        glVertex2i(x+w+w/2, y-h/2);
+        glVertex2i(x+w+w/2+move_value, y-h/2);
         glVertex2i(x+w,y );
     //    glVertex2i(x2, y1);
         glEnd();
@@ -476,7 +446,7 @@ void Box::init()
     x_size = w;
     y_size = h;
     id = value;
-    base_value = rand()%3+10;
+    base_value = rand()%3;
     ifdraw =1;
 }
 
@@ -497,6 +467,20 @@ Box::Box()
 
 void Box::Action()
 {
+   /* if(ifdraw==1)
+    {
+        for(int i=0;i<5;i++)
+        {
+            int r = 5;
+            glColor3ub(0,0,200);
+            draw_box_from_center(x,y,h-i,w-i);
+            glColor3ub(255,0,0);
+            DrawCircle(x, y, r-i);
+            glColor3ub(0,0,0);
+        }
+        
+
+    }*/
     Kill();
 }
 
@@ -599,7 +583,7 @@ void Resource::get(int &x_,int &y_,int &x_size_,int &y_size_)
 
 //Check the example main code for function usage.
 //
-
+////
 //int main(void)
 //{
 //    int Window_X = 800;
@@ -651,9 +635,9 @@ void Resource::get(int &x_,int &y_,int &x_size_,int &y_size_)
 //
 //
 //    FsOpenWindow(0, 0, 800, 600, 1);
-//
-//
-//
+
+
+
 //
 //    for(;;)
 //    {
@@ -727,5 +711,7 @@ void Resource::get(int &x_,int &y_,int &x_size_,int &y_size_)
 //        FsSwapBuffers();
 //
 //    }
-//
+
 //}
+
+
