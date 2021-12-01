@@ -536,7 +536,6 @@ private:
 
     void plan(double* target)
     {
-
         double* start = new double[2];
         start[0] = x;
         start[1] = y;
@@ -560,6 +559,19 @@ private:
             }
         }
         delete[] start;
+
+        int r = rand() % 10;
+        if (r < 7) {
+            dx = dx;
+            dy = dy;
+        }
+        else {
+            dx = dx * (rand() % 2 );
+            dy = dy * (rand() % 2 );
+        }
+
+
+        
     };
 
     void updateAttackReady(double* target)

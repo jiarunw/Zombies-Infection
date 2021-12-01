@@ -280,7 +280,7 @@ void colliRP(Player* myPlayer, list<Resource*>& resourceList, vector<Enemy*>& en
 				double enemyY = curEnemy->getY();
 				double enemyXsize = curEnemy->getXSize();
 				double enemyYsize = curEnemy->getYSize();
-				if (abs(enemyX - reX) < reXsize && abs(enemyY - reY) < reYsize) {
+				if (abs(enemyX - reX) < reXsize + 8 && abs(enemyY - reY) < reYsize + 8) {
 					curEnemy->attacked(10);
 					curResource->Action();
 					cout << "Bomb" << endl;
@@ -289,7 +289,7 @@ void colliRP(Player* myPlayer, list<Resource*>& resourceList, vector<Enemy*>& en
 			}
 		}
 		// check resource and player
-		if (abs(playerX - reX) < reXsize && abs(playerY - reY) < reYsize) {
+		if (abs(playerX - reX) < reXsize + 8 && abs(playerY - reY) < reYsize + 8) {
 			if (curReId == 2) {
 				// HPrecover
 				myPlayer->updateHP(-1 * curResource->GetValue());
