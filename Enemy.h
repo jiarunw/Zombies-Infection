@@ -48,8 +48,8 @@ public:
             }
         }
         // zombie visualization size
-        this->xSize = 20;
-        this->ySize = 35;
+        this->xSize = 50;
+        this->ySize = 50;
         this->dx = 0;
         this->dy = 1;
         this->state = 1; //0:dead ;1: alive; 2: attacking; 3: attacked
@@ -58,11 +58,23 @@ public:
         this->attackReady = 0;
         //        this->bodyPNG.Decode("zombie_left.png");
         //        this->bodyPNG.Flip();
-        this->bodyPNGs = new YsRawPngDecoder[2];
-        this->bodyPNGs[0].Decode("zombie_left.png");
+        this->bodyPNGs = new YsRawPngDecoder[8];
+        this->bodyPNGs[0].Decode("zombie1_left.png");
         this->bodyPNGs[0].Flip();
-        this->bodyPNGs[1].Decode("zombie_right.png");
+        this->bodyPNGs[1].Decode("zombie1_right.png");
         this->bodyPNGs[1].Flip();
+        this->bodyPNGs[2].Decode("zombie2_left.png");
+        this->bodyPNGs[2].Flip();
+        this->bodyPNGs[3].Decode("zombie2_right.png");
+        this->bodyPNGs[3].Flip();
+        this->bodyPNGs[4].Decode("zombie3_left.png");
+        this->bodyPNGs[4].Flip();
+        this->bodyPNGs[5].Decode("zombie3_right.png");
+        this->bodyPNGs[5].Flip();
+        this->bodyPNGs[6].Decode("zombie4_left.png");
+        this->bodyPNGs[6].Flip();
+        this->bodyPNGs[7].Decode("zombie4_right.png");
+        this->bodyPNGs[7].Flip();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -77,14 +89,14 @@ public:
         {
         case 1:
             //Speed
-            this->v = 8;
+            this->v = 4;
             this->HP = 10;
             this->ATK = 1;
             this->attackRange = 100;
             break;
         case 2:
             //ATK
-            this->v = 6;
+            this->v = 1;
             this->HP = 10;
             this->ATK = 5;
             this->attackRange = 100;
@@ -93,7 +105,7 @@ public:
             //HP
             this->v = 2;
             this->HP = 20;
-            this->ATK = 0;
+            this->ATK = 3;
             this->attackRange = 100;
             break;
         case 4:
@@ -247,10 +259,10 @@ public:
     {
         YsRawPngDecoder* png;
         if (dx >= 0) {
-            png = &bodyPNGs[0];
+            png = &bodyPNGs[2 * (type - 1)];
         } 
         else {
-            png = &bodyPNGs[1];
+            png = &bodyPNGs[2 * (type - 1) + 1];
         }
         this->curT += 1;
         // cout << this->state << endl;
@@ -567,7 +579,6 @@ private:
                 {
                     this->attackReady = 0;
 
-                    return;
                 }
             }
             this->attackReady = 1;

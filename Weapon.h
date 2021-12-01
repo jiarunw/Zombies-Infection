@@ -17,7 +17,8 @@ public:
     int ySize;
     YsRawPngDecoder* gunPNGs;
     // int coolDownTime;
-    Weapon(int id) {
+    Weapon(int id, YsRawPngDecoder* gunPNGs) {
+        this->gunPNGs = gunPNGs;
         switch (id)
         {
         case 0:
@@ -53,10 +54,7 @@ public:
         this->imgDir = imgDir;
         this->attckPower = attckPower;
         this->bullet = bullet;
-        this->gunPNGs = new YsRawPngDecoder[3];
-        this->gunPNGs[0].Decode("pistol.png");
-        this->gunPNGs[1].Decode("rifle.png");
-        this->gunPNGs[2].Decode("machineGun.png");
+
        /* this->gunPNGs[0].Flip();
         this->gunPNGs[1].Flip();
         this->gunPNGs[2].Flip();*/

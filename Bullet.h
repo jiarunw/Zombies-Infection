@@ -80,25 +80,31 @@ public:
     };
 
 
-    void draw() {
+    void draw(int id) {
         this->curT += 1;
         // cout << this->state << endl;
         switch (state) {
         case 0:
             break;
         case 1:
-            drawAlive();
+            drawAlive(id);
             break;
         default:
-            drawAlive();
+            drawAlive(id);
             break;
         }
 
     };
 
-    void drawAlive() {
-
-        glColor4ub(250, 0, 0, 255);
+    void drawAlive(int id) {
+        if (id == 0) {
+            // enemy bullet
+            glColor4ub(0, 255, 0, 255);
+        }
+        else {
+            // bullet
+            glColor4ub(255, 0, 0, 255);
+        }
         
         double r1 = 3;
         glBegin(GL_POLYGON);

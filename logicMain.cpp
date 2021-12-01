@@ -18,6 +18,7 @@ int mapHeight = 600;
 using namespace std;
 
 #define GETMAPINDEX(X, Y, XSIZE, YSIZE) ((Y)*XSIZE + (X))
+auto gunPNGs = new YsRawPngDecoder[3];
 
 // BackGround Part
 void initObstacle(double map[], int xObstacle[], int yObstacle[], int xObstacleSize[], int yObstacleSize[]) {
@@ -145,8 +146,8 @@ void initEnemy(double map[], vector<Enemy*>& enemyList, int enemyNum, int mapWid
 		}
 	}
 	while (enemyList.size() < enemyNum) {
-		int typeEnemy = rand() % 3 + 1;
-		Enemy* curEnemy = new Enemy(map, mapWidth, mapHeight, 3);
+		int typeEnemy = rand() % 4 + 1;
+		Enemy* curEnemy = new Enemy(map, mapWidth, mapHeight, typeEnemy);
 		//Enemy curEnemy = Enemy(map, mapWidth, mapHeight);
 		enemyList.push_back(curEnemy); 
 	}
@@ -170,7 +171,7 @@ Player* initPlayer(double map[], int mapWidth, int mapHeight) {
 			break;
 		}
 	}
-	Player* myPlayer = new Player(playerX, playerY);
+	Player* myPlayer = new Player(playerX, playerY, gunPNGs);
 	return myPlayer;
 }
 
@@ -181,10 +182,10 @@ void drawPlayer(Player* myPlayer, int mx, int my) {
 // enemy Bullet Part, Bullet Part
 void drawBullet(list<Bullet*> enemyBulletList, list<Bullet*> bulletList) {
 	for (Bullet* curBullet : enemyBulletList) {
-		curBullet->draw();
+		curBullet->draw(0);
 	}
 	for (Bullet* curBullet : bulletList) {
-		curBullet->draw();
+		curBullet->draw(1);
 	}
 }
 
@@ -308,7 +309,7 @@ void colliRP(Player* myPlayer, list<Resource*>& resourceList, vector<Enemy*>& en
 				// box, add weapon
 				int weaponId = curResource->GetValue();
 				cout << weaponId << "\n";
-				Weapon* curWeapon = new Weapon(weaponId);
+				Weapon* curWeapon = new Weapon(weaponId, gunPNGs);
 				myPlayer->addWeapon(curWeapon);
 				//curResource->Action();
 				it = resourceList.erase(it);
@@ -451,8 +452,11 @@ void shoot(list<Bullet*>& bulletList, Player* myPlayer, int evt, int mx, int my)
 
 int main() {
 	srand(time(NULL));
+	gunPNGs[0].Decode("pistol.png");
+	gunPNGs[1].Decode("rifle.png");
+	gunPNGs[2].Decode("machineGun.png");
 	//FsChangeToProgramDir();
-	
+
 	// window
 	int windowWidth = 800;
 	int windowHeight = 600;
@@ -500,8 +504,8 @@ int main() {
 
 	//
 	int enemyLevel = 1;
-	
-	while (true) {
+	int terminate = 0;
+	while (terminate == 0) {
 		if (player.IsPlaying(wav) != YSTRUE) {
 			char* fileName;
 			string str = "background.wav";
@@ -514,7 +518,8 @@ int main() {
 		player.KeepPlaying();
 		FsPollDevice();
 		auto key = FsInkey();
-		if (key == FSKEY_ESC) { 
+		if (key == FSKEY_ESC) {
+			terminate = 1;
 			break;
 		}
 		myPlayer->switchWeapon(key);
@@ -654,9 +659,31 @@ int main() {
 		// Check gamestate
 		// cout << myPlayer->getHP() << "\n";
 		if (myPlayer->getHP() <= 0) {
+			char* textContent6;
+			string strText6 = "Game Over";
+			textContent6 = new char[strText6.length() + 1];
+			strcpy(textContent6, strText6.c_str());
+
+			glColor3ub(255, 0, 0);
+			glRasterPos2d(300, 300);
+			// YsGlDrawFontBitmap32x48(textContent);
+			YsGlDrawFontBitmap20x32(textContent6);
 			// TODO : add player dead effect, UI
-			cout << "game over" << "\n";
-			break;
+			FsSwapBuffers();
+			FsSleep(25);
+			while (true)
+			{
+				
+				
+				FsPollDevice();
+				
+				auto key = FsInkey();
+				if (key == FSKEY_ESC) {
+					terminate = 1;
+					break;
+				}
+			}
+			
 		}
 		FsSwapBuffers();
 		FsSleep(25);

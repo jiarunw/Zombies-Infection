@@ -1,13 +1,13 @@
 #include "Player.h"
 #include <math.h>
 #define PI 3.1415926
-Player::Player(int x, int y)
+Player::Player(int x, int y, YsRawPngDecoder* gunPNGs)
 {
-	initialize(x, y);
+	initialize(x, y, gunPNGs);
 }
-void Player::initialize(int x, int y)
+void Player::initialize(int x, int y, YsRawPngDecoder* gunPNGs)
 {
-	this->weaponList.push_back(new Weapon(0));
+	this->weaponList.push_back(new Weapon(0, gunPNGs));
 	this->state = 1;
 	this->x = x;
 	this->y = y;
@@ -15,7 +15,7 @@ void Player::initialize(int x, int y)
 	this->dy = 0;
 	this->vx = 5;
 	this->vy = 5;
-	this->HP = 500;
+	this->HP = 300;
 	this->xSize = 38;
 	this->ySize = 58;
 	this->currentWeaponID = 0;
@@ -99,34 +99,6 @@ void Player::drawHPBar() const
 }
 void Player::draw(int mx, int my) const
 {
-	//this->curT += 1;
-	/*glColor4ub(250, 0, 0, 255);
-	double r1 = 10;
-	glBegin(GL_POLYGON);
-	for (int i = 0; i <= 64; i++)
-	{
-		double angle = (double)i * PI * 2 / 64.0;
-		double X = (double)x + cos(angle) * (double)r1;
-		double Y = (double)y + sin(angle) * (double)r1;
-		glVertex2d(X, Y);
-
-	}
-	glEnd();
-
-	double d = 15;
-
-	glColor4ub(0, 255, 0, 255);
-	double r2 = 5;
-	glBegin(GL_POLYGON);
-	for (int i = 0; i <= 64; i++)
-	{
-		double angle = (double)i * PI * 2 / 64.0;
-		double X = (double)x + cos(angle) * (double)r2 + dx * d;
-		double Y = (double)y + sin(angle) * (double)r2 + dy * d;
-		glVertex2d(X, Y);
-	}
-	glEnd();
-	*/
 	glBindTexture(GL_TEXTURE_2D, textID2);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);

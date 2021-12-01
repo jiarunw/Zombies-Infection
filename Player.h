@@ -19,7 +19,7 @@ private:
 	int xSize;
 	int ySize;
 	int HP;
-	int maxHP = 500;
+	int maxHP = 300;
 	double vx;
 	double vy;
 	int direction;
@@ -29,8 +29,8 @@ private:
 	vector<Weapon*> weaponList;
 public:
 	int currentWeaponID;
-	Player(int x, int y);
-	void initialize(int x, int y);
+	Player(int x, int y, YsRawPngDecoder* gunPNGs);
+	void initialize(int x, int y, YsRawPngDecoder* gunPNGs);
 	void move(int key);
 	void draw(int mx, int my)const;
 	void switchWeapon(int key);
